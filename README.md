@@ -9,7 +9,7 @@
 Requirements: Node.js 20.9 or newer, npm, and Docker Desktop (for the local PostgreSQL database).
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Vishvasdhama11/devora.git
 cd devora
 npm ci
 cp .env.example .env.local
