@@ -1,0 +1,45 @@
+{
+  "name": "devora-vscode-extension",
+  "displayName": "Devora",
+  "description": "Open Devora workspaces, browse tools, and streamline local workflow from VS Code.",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "main": "./extension.js",
+  "activationEvents": [
+    "onCommand:devora.openDashboard",
+    "onCommand:devora.openTools",
+    "onCommand:devora.createWorkspace"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "devora.openDashboard",
+        "title": "Devora: Open Dashboard",
+        "category": "Devora"
+      },
+      {
+        "command": "devora.openTools",
+        "title": "Devora: Browse Tools",
+        "category": "Devora"
+      },
+      {
+        "command": "devora.createWorkspace",
+        "title": "Devora: Create Workspace",
+        "category": "Devora"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        { "command": "devora.openDashboard" },
+        { "command": "devora.openTools" },
+        { "command": "devora.createWorkspace" }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node -e \"console.log('Devora VS Code extension packaged')\""
+  }
+}

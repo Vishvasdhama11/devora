@@ -1,26 +1,61 @@
 {
   "name": "devora",
-  "version": "0.1.0",
   "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "format": "prettier --write .",
+    "clean": "rm -rf .next node_modules/.cache",
+    "prepare": "husky install",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset --force",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:dev": "docker compose up -d postgres && prisma generate && prisma db push",
+    "dev:full": "npm run db:up && npm run db:dev && npm run dev"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.3",
+    "@monaco-editor/react": "^4.7.0",
+    "@prisma/client": "^5.22.0",
+    "@radix-ui/react-dialog": "^1.3.0",
+    "@radix-ui/react-slot": "^1.5.0",
+    "@radix-ui/react-tabs": "^1.2.0",
+    "bcryptjs": "^3.0.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.55.0",
     "next": "16.4.0",
+    "next-auth": "^4.24.15",
+    "next-themes": "^0.4.6",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
-    "@tailwindcss/turbopack": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
+    "@eslint/eslintrc": "^3.0.0",
+    "@tailwindcss/turbopack": "^4.3.3",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.19.43",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
     "eslint-config-next": "16.4.0",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "prettier": "^3.5.3",
+    "prisma": "^5.22.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.0"
   }
 }
