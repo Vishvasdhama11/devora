@@ -14,7 +14,6 @@
     "test": "vitest run",
     "format": "prettier --write .",
     "clean": "rm -rf .next node_modules/.cache",
-    "prepare": "husky install",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
