@@ -40,7 +40,10 @@ describe("PATCH /api/workspaces/[id]", () => {
     vi.clearAllMocks();
     getAuthenticatedUser.mockResolvedValue({ user: { id: "user-1" } });
     prisma.workspace.findFirst.mockResolvedValue(workspace);
-    prisma.workspace.update.mockResolvedValue({ ...workspace, name: "Renamed" });
+    prisma.workspace.update.mockResolvedValue({
+      ...workspace,
+      name: "Renamed",
+    });
     prisma.activityLog.create.mockResolvedValue({});
     prisma.$transaction.mockImplementation(async (operation) =>
       operation({
@@ -65,9 +68,12 @@ describe("PATCH /api/workspaces/[id]", () => {
   });
 
   it("applies a partial update without overwriting omitted fields", async () => {
-    const response = await PATCH(makeRequest(JSON.stringify({ name: " Renamed " })), {
-      params: Promise.resolve({ id: workspace.id }),
-    });
+    const response = await PATCH(
+      makeRequest(JSON.stringify({ name: " Renamed " })),
+      {
+        params: Promise.resolve({ id: workspace.id }),
+      },
+    );
 
     expect(response.status).toBe(200);
     expect(prisma.workspace.update).toHaveBeenCalledWith({
@@ -89,5 +95,30 @@ describe("PATCH /api/workspaces/[id]", () => {
     expect(emptyUpdate.status).toBe(400);
     expect(overlongDescription.status).toBe(400);
     expect(prisma.workspace.update).not.toHaveBeenCalled();
+  });
+
+  it("updates project status, progress, and repository links", async () => {
+    const response = await PATCH(
+      makeRequest(
+        JSON.stringify({
+          status: "completed",
+          progress: 100,
+          repositoryUrl: "https://github.com/example/project",
+          deadline: null,
+        }),
+      ),
+      { params: Promise.resolve({ id: workspace.id }) },
+    );
+
+    expect(response.status).toBe(200);
+    expect(prisma.workspace.update).toHaveBeenCalledWith({
+      where: { id: workspace.id },
+      data: {
+        status: "completed",
+        progress: 100,
+        repositoryUrl: "https://github.com/example/project",
+        deadline: null,
+      },
+    });
   });
 });

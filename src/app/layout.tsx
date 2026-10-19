@@ -37,10 +37,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} bg-[#09090b] text-zinc-100 antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <AppSessionProvider>
-            <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.20),_transparent_35%),linear-gradient(180deg,_#09090b,_#111827_40%,_#09090b)]">
+            <div className="app-shell min-h-screen">
               <SiteHeader />
               <main>{children}</main>
               <SiteFooter />

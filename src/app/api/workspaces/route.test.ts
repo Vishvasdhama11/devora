@@ -53,7 +53,9 @@ describe("POST /api/workspaces", () => {
     const invalidVisibility = await POST(
       makeRequest(JSON.stringify({ name: "Tooling", visibility: "public" })),
     );
-    const overlongName = await POST(makeRequest(JSON.stringify({ name: "x".repeat(101) })));
+    const overlongName = await POST(
+      makeRequest(JSON.stringify({ name: "x".repeat(101) })),
+    );
 
     expect(malformed.status).toBe(400);
     expect(invalidVisibility.status).toBe(400);
@@ -64,7 +66,11 @@ describe("POST /api/workspaces", () => {
   it("creates a workspace and activity entry in one transaction", async () => {
     const response = await POST(
       makeRequest(
-        JSON.stringify({ name: " Tooling ", description: " Developer tools ", visibility: "team" }),
+        JSON.stringify({
+          name: " Tooling ",
+          description: " Developer tools ",
+          visibility: "team",
+        }),
       ),
     );
 
@@ -75,9 +81,55 @@ describe("POST /api/workspaces", () => {
         name: "Tooling",
         description: "Developer tools",
         visibility: "team",
+        status: "active",
+        techStack: "",
+        progress: 0,
+        deadline: null,
+        repositoryUrl: null,
+        demoUrl: null,
       },
     });
     expect(prisma.activityLog.create).toHaveBeenCalledOnce();
     expect(prisma.$transaction).toHaveBeenCalledOnce();
+  });
+
+  it("accepts project metadata and rejects invalid links or progress", async () => {
+    const response = await POST(
+      makeRequest(
+        JSON.stringify({
+          name: "Devora",
+          techStack: "Next.js, TypeScript",
+          progress: 35,
+          deadline: "2026-12-31",
+          repositoryUrl: "https://github.com/example/devora",
+          demoUrl: "https://devora.example",
+          status: "active",
+        }),
+      ),
+    );
+    const invalidLink = await POST(
+      makeRequest(
+        JSON.stringify({
+          name: "Bad link",
+          repositoryUrl: "javascript:alert(1)",
+        }),
+      ),
+    );
+    const invalidProgress = await POST(
+      makeRequest(JSON.stringify({ name: "Bad progress", progress: 101 })),
+    );
+
+    expect(response.status).toBe(201);
+    expect(prisma.workspace.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        techStack: "Next.js, TypeScript",
+        progress: 35,
+        deadline: expect.any(Date),
+        repositoryUrl: "https://github.com/example/devora",
+        demoUrl: "https://devora.example/",
+      }),
+    });
+    expect(invalidLink.status).toBe(400);
+    expect(invalidProgress.status).toBe(400);
   });
 });

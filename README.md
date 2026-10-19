@@ -39,12 +39,14 @@ Most tools are available without an account. Create an account to use the protec
 The tool catalog is driven by one registry and includes:
 
 - **JSON:** format and validate JSON; convert it to TypeScript.
+- **Data:** convert JSON object arrays to CSV and CSV tables back to JSON.
 - **Regex:** test patterns, highlight matches, and start from templates.
 - **Encoding:** encode/decode Base64, URL-safe strings, and HTML entities.
 - **API:** send HTTP requests, inspect responses, and keep local request history.
 - **CSS and colors:** convert HEX, RGB, and HSL values; create CSS variables.
 - **URLs:** inspect URL parts and build query strings.
-- **Security utilities:** generate UUIDs and SHA-256 hashes.
+- **Security utilities:** generate UUIDs, SHA-256 hashes, and strong random passwords; decode JWT headers and payloads without verifying signatures.
+- **Images:** convert local PNG, JPEG, WebP, GIF, AVIF, and BMP files into Base64 Data URLs in your browser.
 - **Formatting:** write and preview Markdown.
 - **Time:** convert Unix timestamps, dates, and time zones.
 - **Git:** generate common Git commands for everyday workflows.
@@ -55,12 +57,22 @@ Use the home-page search or press **Cmd/Ctrl + K** to find a tool.
 
 After signing in, users can:
 
+- Search and open developer tools from a personalized dashboard.
+- Jump to frequently used tools, recent workspaces, favorites, and account activity.
+- Manage projects with status, progress, tech stack, deadlines, and repository/demo links.
+- Create project-linked tasks, set priorities and due dates, filter open, overdue, and completed work, and see deadlines in the calendar agenda.
+- Write searchable Markdown/plain-text notes in folders; pin, favorite, tag, and attach them to projects.
+- Save HTTP(S) reference bookmarks with descriptions and tags.
 - Manage workspaces, including create, edit, duplicate, and delete.
 - Save and remove favorite tools.
 - Review recent activity, including workspace, favorite, and settings changes.
 - Set theme, default view, notification preference, and compact mode.
 
 Personal workspace, favorite, activity, and preference data is stored in PostgreSQL and scoped to the signed-in user. Many utilities process data in the browser; avoid submitting sensitive content to tools that make network requests, such as the API tester.
+
+When updating an existing development database with the project, run `npm run db:dev` to apply the additive productivity schema changes. This development command uses `prisma db push` and does not create migration history. For new or already migration-managed production databases, apply migrations with `npx prisma migrate deploy`. If a production database was previously managed with `db push`, verify and baseline its existing schema before deploying migrations; do not apply the initial migration as though the database were empty.
+
+The image-to-Data-URL tool works locally and does not upload files. Its output embeds the image in HTML or CSS; it is not a publicly hosted or shareable image link.
 
 ### CLI and VS Code
 
@@ -100,6 +112,16 @@ Copy `.env.example` to `.env.local` and set values for your environment:
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Optional Google OAuth credentials                                  |
 
 Keep `.env.local` private and never commit real credentials. Email/password registration and sign-in use the local database; OAuth providers require their corresponding credentials.
+
+### Enable GitHub sign-in
+
+Create a GitHub OAuth App and set its **Authorization callback URL** to:
+
+```text
+http://localhost:3000/api/auth/callback/github
+```
+
+Copy the OAuth App's client ID and client secret into `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` in `.env.local`, then restart the development server. For a deployed app, register the matching production callback URL (`https://your-domain/api/auth/callback/github`) and use the production OAuth credentials. The GitHub button appears when both credentials are configured.
 
 ## Useful commands
 

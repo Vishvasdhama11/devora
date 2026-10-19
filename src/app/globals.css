@@ -6,6 +6,17 @@
   --muted: #a1a1aa;
 }
 
+html.light {
+  color-scheme: light;
+  --foreground: #18181b;
+  --background: #f8fafc;
+  --muted: #52525b;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -14,6 +25,18 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), sans-serif;
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at top, rgba(124, 58, 237, 0.2), transparent 35%),
+    linear-gradient(180deg, #09090b, #111827 40%, #09090b);
+}
+
+html.light .app-shell {
+  background:
+    radial-gradient(circle at top, rgba(124, 58, 237, 0.1), transparent 35%),
+    linear-gradient(180deg, #f8fafc, #eef2ff 40%, #f8fafc);
 }
 
 * {
@@ -39,4 +62,55 @@ body {
 
 .monaco-editor {
   border-radius: 1rem;
+}
+
+html.light .bg-zinc-950,
+html.light .bg-zinc-950\/80,
+html.light .bg-zinc-950\/60,
+html.light .bg-zinc-950\/50,
+html.light .bg-zinc-900,
+html.light .bg-zinc-900\/80,
+html.light .bg-zinc-900\/70,
+html.light .bg-zinc-900\/60,
+html.light .bg-zinc-900\/50 {
+  background-color: #ffffff;
+}
+
+html.light .bg-white\/5,
+html.light .bg-white\/10 {
+  background-color: rgb(24 24 27 / 0.04);
+}
+
+html.light .text-white {
+  color: #18181b;
+}
+
+html.light button.text-white,
+html.light .bg-violet-600.text-white {
+  color: #ffffff;
+}
+
+html.light .text-zinc-100,
+html.light .text-zinc-200,
+html.light .text-zinc-300 {
+  color: #27272a;
+}
+
+html.light .text-zinc-400 {
+  color: #52525b;
+}
+
+html.light .text-zinc-500 {
+  color: #71717a;
+}
+
+html.light .text-violet-100,
+html.light .text-violet-200,
+html.light .text-violet-300 {
+  color: #6d28d9;
+}
+
+html.light .border-white\/10,
+html.light .border-white\/20 {
+  border-color: rgb(24 24 27 / 0.12);
 }

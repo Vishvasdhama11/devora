@@ -72,6 +72,4 @@ function activate(context) {
   vscode.window.setStatusBarMessage("Devora ready", 2000);
 }
 
-function deactivate() {}
-
-module.exports = { activate, deactivate };
+module.exports = { activate };

@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GitHubSignInButton } from "@/components/github-sign-in-button";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -65,6 +66,12 @@ export default function SignUpPage() {
           <CardDescription className="mt-2 text-zinc-400">Set up your Devora workspace and start using the toolkit.</CardDescription>
         </CardHeader>
         <CardContent className="p-0 pt-6">
+          <GitHubSignInButton />
+          <div className="my-5 flex items-center gap-3 text-xs text-zinc-500">
+            <span className="h-px flex-1 bg-white/10" />
+            OR SIGN UP WITH EMAIL
+            <span className="h-px flex-1 bg-white/10" />
+          </div>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm text-zinc-300">Full name</label>
@@ -73,6 +80,7 @@ export default function SignUpPage() {
                 type="text"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
+                maxLength={80}
                 className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none"
                 placeholder="Ada Lovelace"
                 required
@@ -86,6 +94,7 @@ export default function SignUpPage() {
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
+                maxLength={254}
                 className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none"
                 placeholder="you@company.com"
                 required
@@ -100,8 +109,9 @@ export default function SignUpPage() {
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-violet-500 focus:outline-none"
-                placeholder="At least 8 characters"
+                placeholder="At least 8 characters (72 bytes max)"
                 minLength={8}
+                maxLength={72}
                 required
               />
             </div>

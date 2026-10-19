@@ -1,10 +1,14 @@
 import { ApiTester } from "@/components/tools/api-tester";
 import { ColorTools } from "@/components/tools/color-tools";
+import { CsvToJsonTool, JsonToCsvTool } from "@/components/tools/csv-converter";
 import { EncodingTool } from "@/components/tools/encoding-tool";
 import { GitTool } from "@/components/tools/git-generator";
 import { HashGenerator } from "@/components/tools/hash-generator";
+import { ImageDataUrlTool } from "@/components/tools/image-data-url-tool";
 import { JsonStudio } from "@/components/tools/json-studio";
+import { JwtDecoder } from "@/components/tools/jwt-decoder";
 import { MarkdownTool } from "@/components/tools/markdown-tool";
+import { PasswordGenerator } from "@/components/tools/password-generator";
 import { RegexBuilder } from "@/components/tools/regex-builder";
 import { TimeTool } from "@/components/tools/time-tool";
 import { UrlTool } from "@/components/tools/url-tool";
@@ -18,10 +22,12 @@ export type ToolCategory =
   | "Formatting"
   | "CSS"
   | "HTML"
+  | "Images"
   | "Security"
   | "Git"
   | "Time"
-  | "URL";
+  | "URL"
+  | "Data";
 
 export type ToolDefinition = {
   id: string;
@@ -44,6 +50,26 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     tags: ["json", "format", "pretty"],
     keywords: ["json formatter", "pretty print", "indentation", "parse"],
     component: JsonStudio,
+  },
+  {
+    id: "json-to-csv",
+    name: "JSON to CSV",
+    slug: "json-to-csv",
+    description: "Convert arrays of JSON objects into properly escaped CSV with consistent columns.",
+    category: "Data",
+    tags: ["json", "csv", "convert"],
+    keywords: ["json to csv", "export json", "spreadsheet", "comma-separated values"],
+    component: JsonToCsvTool,
+  },
+  {
+    id: "csv-to-json",
+    name: "CSV to JSON",
+    slug: "csv-to-json",
+    description: "Convert CSV rows into JSON objects using the first row as column names.",
+    category: "Data",
+    tags: ["csv", "json", "convert"],
+    keywords: ["csv to json", "import csv", "spreadsheet", "comma-separated values"],
+    component: CsvToJsonTool,
   },
   {
     id: "regex-tester",
@@ -114,6 +140,36 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     tags: ["hash", "sha256", "security"],
     keywords: ["sha256", "hash generator", "digest"],
     component: HashGenerator,
+  },
+  {
+    id: "jwt-decoder",
+    name: "JWT Decoder",
+    slug: "jwt-decoder",
+    description: "Decode JWT header and payload locally. This does not verify the token signature.",
+    category: "Security",
+    tags: ["jwt", "token", "decode"],
+    keywords: ["jwt decoder", "json web token", "claims", "bearer token"],
+    component: JwtDecoder,
+  },
+  {
+    id: "password-generator",
+    name: "Password Generator",
+    slug: "password-generator",
+    description: "Generate a random password with configurable length and character types in your browser.",
+    category: "Security",
+    tags: ["password", "security", "generator"],
+    keywords: ["random password", "secure password", "passphrase"],
+    component: PasswordGenerator,
+  },
+  {
+    id: "image-data-url",
+    name: "Image to Data URL",
+    slug: "image-data-url",
+    description: "Convert a local image into a Data URL for HTML, CSS, or code without uploading it.",
+    category: "Images",
+    tags: ["image", "data url", "base64"],
+    keywords: ["image to url", "photo to url", "image base64", "data uri", "embed image"],
+    component: ImageDataUrlTool,
   },
   {
     id: "markdown-formatter",

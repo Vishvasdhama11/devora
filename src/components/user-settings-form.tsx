@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,6 +14,7 @@ type Settings = {
 };
 
 export function UserSettingsForm({ initialSettings }: { initialSettings?: Settings | null }) {
+  const { setTheme } = useTheme();
   const [settings, setSettings] = useState<Settings>({
     theme: initialSettings?.theme ?? "dark",
     defaultView: initialSettings?.defaultView ?? "dashboard",
@@ -22,6 +24,12 @@ export function UserSettingsForm({ initialSettings }: { initialSettings?: Settin
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (initialSettings?.theme) {
+      setTheme(initialSettings.theme);
+    }
+  }, [initialSettings?.theme, setTheme]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -42,6 +50,7 @@ export function UserSettingsForm({ initialSettings }: { initialSettings?: Settin
         return;
       }
 
+      setTheme(settings.theme);
       setSaved(true);
       window.setTimeout(() => setSaved(false), 1800);
     } catch {
@@ -58,7 +67,11 @@ export function UserSettingsForm({ initialSettings }: { initialSettings?: Settin
         <div className="mt-5 space-y-4 text-sm text-zinc-300">
           <div className="space-y-2">
             <label htmlFor="theme" className="text-sm text-zinc-300">Theme</label>
-            <select id="theme" value={settings.theme} onChange={(event) => setSettings((current) => ({ ...current, theme: event.target.value }))} className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-zinc-100 focus:border-violet-500 focus:outline-none">
+            <select id="theme" value={settings.theme} onChange={(event) => {
+              const theme = event.target.value;
+              setSettings((current) => ({ ...current, theme }));
+              setTheme(theme);
+            }} className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5 text-sm text-zinc-100 focus:border-violet-500 focus:outline-none">
               <option value="dark">Dark</option>
               <option value="light">Light</option>
               <option value="system">System</option>

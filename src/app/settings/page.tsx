@@ -42,7 +42,7 @@ export default async function SettingsPage() {
         </div>
       </div>
 
-      <UserSettingsForm initialSettings={settings} />
+      <UserSettingsForm key={settings?.theme ?? "dark"} initialSettings={settings} />
 
       <div className="mt-6">
         <Card className="p-6">

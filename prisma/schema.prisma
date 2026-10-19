@@ -8,9 +8,9 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String?
-  email         String?        @unique
+  email         String?       @unique
   emailVerified DateTime?
   image         String?
   passwordHash  String?
@@ -18,10 +18,13 @@ model User {
   sessions      Session[]
   workspaces    Workspace[]
   favorites     Favorite[]
+  bookmarks     Bookmark[]
+  notes         Note[]
+  todos         Todo[]
   activityLogs  ActivityLog[]
   settings      UserSettings?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 model Account {
@@ -59,14 +62,22 @@ model VerificationToken {
 }
 
 model Workspace {
-  id          String   @id @default(cuid())
-  userId      String
-  name        String
-  description String?
-  visibility  String   @default("private")
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String    @id @default(cuid())
+  userId        String
+  name          String
+  description   String?
+  visibility    String    @default("private")
+  status        String    @default("active")
+  techStack     String    @default("")
+  progress      Int       @default(0)
+  deadline      DateTime?
+  repositoryUrl String?
+  demoUrl       String?
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  todos         Todo[]
+  notes         Note[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([userId])
 }
@@ -81,6 +92,57 @@ model Favorite {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+model Bookmark {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  url         String
+  description String?
+  tags        String   @default("")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, updatedAt])
+}
+
+model Note {
+  id          String     @id @default(cuid())
+  userId      String
+  workspaceId String?
+  title       String
+  content     String     @default("")
+  folder      String     @default("General")
+  tags        String     @default("")
+  pinned      Boolean    @default(false)
+  favorite    Boolean    @default(false)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([userId, updatedAt])
+  @@index([workspaceId])
+}
+
+model Todo {
+  id          String     @id @default(cuid())
+  userId      String
+  workspaceId String?
+  title       String
+  description String?
+  status      String     @default("todo")
+  priority    String     @default("medium")
+  dueAt       DateTime?
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([userId, status, dueAt])
+  @@index([workspaceId])
 }
 
 model ActivityLog {

@@ -7,6 +7,8 @@ import { Suspense, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GitHubSignInButton } from "@/components/github-sign-in-button";
+import { getSafeCallbackUrl } from "@/lib/auth-redirect";
 
 function SignInForm() {
   const router = useRouter();
@@ -21,22 +23,27 @@ function SignInForm() {
     setError("");
     setIsSubmitting(true);
 
-    const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+    const callbackUrl = getSafeCallbackUrl(searchParams.get("callbackUrl"));
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        callbackUrl,
+        redirect: false,
+      });
 
-    setIsSubmitting(false);
+      if (result?.error) {
+        setError("Invalid email or password. Try again.");
+        return;
+      }
 
-    if (result?.error) {
-      setError("Invalid email or password. Try again.");
-      return;
+      router.push(callbackUrl);
+      router.refresh();
+    } catch {
+      setError("Sign-in failed. Check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    router.push(callbackUrl);
-    router.refresh();
   }
 
   return (
@@ -47,6 +54,12 @@ function SignInForm() {
           <CardDescription className="mt-2 text-zinc-400">Sign in to your Devora workspace and continue building.</CardDescription>
         </CardHeader>
         <CardContent className="p-0 pt-6">
+          <GitHubSignInButton callbackUrl={getSafeCallbackUrl(searchParams.get("callbackUrl"))} />
+          <div className="my-5 flex items-center gap-3 text-xs text-zinc-500">
+            <span className="h-px flex-1 bg-white/10" />
+            OR CONTINUE WITH EMAIL
+            <span className="h-px flex-1 bg-white/10" />
+          </div>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm text-zinc-300">Email</label>

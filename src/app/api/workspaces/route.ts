@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 
 import { getAuthenticatedUser } from "@/lib/auth-user";
 import { prisma } from "@/lib/prisma";
+import {
+  isProjectStatus,
+  parseProjectDate,
+  parseProjectUrl,
+} from "@/lib/project-fields";
 
 export async function GET() {
   const auth = await getAuthenticatedUser();
@@ -32,17 +37,40 @@ export async function POST(request: Request) {
   try {
     parsedBody = await request.json();
   } catch {
-    return NextResponse.json({ error: "Request body must be valid JSON." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Request body must be valid JSON." },
+      { status: 400 },
+    );
   }
 
-  if (typeof parsedBody !== "object" || parsedBody === null || Array.isArray(parsedBody)) {
-    return NextResponse.json({ error: "Workspace data must be a JSON object." }, { status: 400 });
+  if (
+    typeof parsedBody !== "object" ||
+    parsedBody === null ||
+    Array.isArray(parsedBody)
+  ) {
+    return NextResponse.json(
+      { error: "Workspace data must be a JSON object." },
+      { status: 400 },
+    );
   }
 
   const body = parsedBody as Record<string, unknown>;
-  const name = typeof body.name === "string" ? body.name.trim() : "Untitled workspace";
-  const description = typeof body.description === "string" ? body.description.trim() : "";
+  const name =
+    typeof body.name === "string" ? body.name.trim() : "Untitled workspace";
+  const description =
+    typeof body.description === "string" ? body.description.trim() : "";
   const visibility = body.visibility ?? "private";
+  const status = body.status ?? "active";
+  const techStack =
+    body.techStack === undefined
+      ? ""
+      : typeof body.techStack === "string"
+        ? body.techStack.trim()
+        : null;
+  const progress = body.progress === undefined ? 0 : body.progress;
+  const deadline = parseProjectDate(body.deadline);
+  const repositoryUrl = parseProjectUrl(body.repositoryUrl);
+  const demoUrl = parseProjectUrl(body.demoUrl);
 
   if (
     (body.name !== undefined && typeof body.name !== "string") ||
@@ -50,9 +78,22 @@ export async function POST(request: Request) {
     name.length > 100 ||
     (body.description !== undefined && typeof body.description !== "string") ||
     description.length > 1000 ||
-    (visibility !== "private" && visibility !== "team")
+    (visibility !== "private" && visibility !== "team") ||
+    !isProjectStatus(status) ||
+    techStack === null ||
+    techStack.length > 200 ||
+    typeof progress !== "number" ||
+    !Number.isInteger(progress) ||
+    progress < 0 ||
+    progress > 100 ||
+    deadline === undefined ||
+    repositoryUrl === undefined ||
+    demoUrl === undefined
   ) {
-    return NextResponse.json({ error: "Invalid workspace data." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid workspace data." },
+      { status: 400 },
+    );
   }
 
   const workspace = await prisma.$transaction(async (transaction) => {
@@ -62,6 +103,12 @@ export async function POST(request: Request) {
         name,
         description,
         visibility,
+        status,
+        techStack,
+        progress,
+        deadline,
+        repositoryUrl,
+        demoUrl,
       },
     });
 
@@ -94,18 +141,31 @@ export async function DELETE(request: Request) {
   try {
     parsedBody = await request.json();
   } catch {
-    return NextResponse.json({ error: "Request body must be valid JSON." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Request body must be valid JSON." },
+      { status: 400 },
+    );
   }
 
-  if (typeof parsedBody !== "object" || parsedBody === null || Array.isArray(parsedBody)) {
-    return NextResponse.json({ error: "Workspace data must be a JSON object." }, { status: 400 });
+  if (
+    typeof parsedBody !== "object" ||
+    parsedBody === null ||
+    Array.isArray(parsedBody)
+  ) {
+    return NextResponse.json(
+      { error: "Workspace data must be a JSON object." },
+      { status: 400 },
+    );
   }
 
   const body = parsedBody as Record<string, unknown>;
   const id = typeof body.id === "string" ? body.id.trim() : "";
 
   if (!id) {
-    return NextResponse.json({ error: "Workspace id is required." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Workspace id is required." },
+      { status: 400 },
+    );
   }
 
   const workspace = await prisma.workspace.findFirst({
